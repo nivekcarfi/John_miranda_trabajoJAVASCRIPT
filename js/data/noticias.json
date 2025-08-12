@@ -1,0 +1,14 @@
+{
+    "noticias": [
+        {
+            "titulo": "Nueva funcionalidad en el sitio",
+            "descripcion": "Hemos añadido una nueva sección de noticias para mantenerte informado.",
+            "fecha": "2025-02-24"
+        },
+        {
+            "titulo": "Nuevo diseño",
+            "descripcion": "Hemos actualizado el diseño del sitio para que sea más atractivo.",
+            "fecha": "2025-02-23"
+        }
+    ]
+}

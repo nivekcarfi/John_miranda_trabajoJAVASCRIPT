@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Contacto - JohnSite</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; width: 100%; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html">JohnSite</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="presupuesto.html">Presupuesto</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <h1>Contacto y Ubicación</h1>
+        <p>
+            <strong>Empresa:</strong> JohnSite S.L.<br>
+            <strong>Dirección:</strong> Calle Ejemplo 123, Madrid, España<br>
+            <strong>Teléfono:</strong> 912 345 678<br>
+            <strong>Email:</strong> contacto@johnsite.com
+        </p>
+        <div id="map"></div>
+        <form id="ruta-form">
+            <label for="direccion">Tu dirección:</label>
+            <input type="text" id="direccion" name="direccion" placeholder="Introduce tu dirección" required>
+            <button type="submit">Calcular ruta</button>
+        </form>
+        <div id="ruta-info"></div>
+    </main>
+<footer>
+            <p>&copy; 2025 JohnSite.com</p>
+            
+            <div class="social">
+                <a href="https://facebook.com" target="_blank"><img src="assets/facebook.png" alt="Facebook"></a>
+                <a href="https://twitter.com" target="_blank"><img src="assets/twitter.png" alt="Twitter"></a>
+                <a href="https://instagram.com" target="_blank"><img src="assets/instagram.png" alt="Instagram"></a>
+            </div>
+            
+            <address>
+                Calle Ejemplo 123, Madrid, España
+            </address>
+            <small>
+                Aviso legal: Este sitio es propiedad de JohnSite.com. Todos los derechos reservados.
+            </small>
+</footer>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.min.js"></script>
+    <script>
+        // Coordenadas de la empresa (Madrid, ejemplo)
+        const empresaLatLng = [40.4168, -3.7038];
+
+        // Inicializar el mapa
+        const map = L.map('map').setView(empresaLatLng, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Marcador de la empresa
+        L.marker(empresaLatLng).addTo(map)
+            .bindPopup('JohnSite S.L.<br>Calle Ejemplo 123, Madrid')
+            .openPopup();
+
+        let control = null;
+
+        document.getElementById('ruta-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const direccion = document.getElementById('direccion').value;
+            if (!direccion) return;
+
+            // Geocodificar la dirección del cliente usando Nominatim
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const clienteLatLng = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+                        if (control) map.removeControl(control);
+                        control = L.Routing.control({
+                            waypoints: [
+                                L.latLng(clienteLatLng),
+                                L.latLng(empresaLatLng)
+                            ],
+                            routeWhileDragging: false,
+                            show: false
+                        }).addTo(map);
+                        document.getElementById('ruta-info').innerHTML = "Ruta calculada en el mapa.";
+                    } else {
+                        document.getElementById('ruta-info').innerHTML = "Dirección no encontrada.";
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('ruta-info').innerHTML = "Error al buscar la dirección.";
+                });
+        });
+    </script>
+</body>
+</html>
