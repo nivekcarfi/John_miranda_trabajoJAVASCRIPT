@@ -1,30 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const imagenes = [
-        { src: "assets/youtube.jpg", alt: "Imagen 1" },
-        { src: "assets/tiktok.png", alt: "Imagen 2" },
-        { src: "assets/twitch.webp", alt: "Imagen 3" }
+    const root = document.getElementById('galeria-root');
+    fetch("js/data/galeria.json")
+        .then(response => response.json())
+        .then(data => {
+            const imagenes = data.imagenes;
+            if (!imagenes || imagenes.length === 0) {
+                root.textContent = "No hay imágenes para mostrar.";
+                return;
+            }
 
-    ];
+            let indiceActual = 0;
 
-    let indiceActual = 0;
-    const imgElemento = document.getElementById("carrusel-img");
-    const prevBtn = document.getElementById("prev-btn");
-    const nextBtn = document.getElementById("next-btn");
+            // Crear estructura dinámica
+            const carrusel = document.createElement('div');
+            carrusel.className = 'carrusel';
 
-    function mostrarImagen(indice) {
-        imgElemento.src = imagenes[indice].src;
-        imgElemento.alt = imagenes[indice].alt;
-    }
+            const btnPrev = document.createElement('button');
+            btnPrev.id = 'prev-img';
+            btnPrev.innerHTML = '&#10094;';
 
-    prevBtn.addEventListener("click", () => {
-        indiceActual = (indiceActual - 1 + imagenes.length) % imagenes.length;
-        mostrarImagen(indiceActual);
-    });
+            const img = document.createElement('img');
+            img.id = 'galeria-img';
+            img.className = 'img-galeria';
 
-    nextBtn.addEventListener("click", () => {
-        indiceActual = (indiceActual + 1) % imagenes.length;
-        mostrarImagen(indiceActual);
-    });
+            const btnNext = document.createElement('button');
+            btnNext.id = 'next-img';
+            btnNext.innerHTML = '&#10095;';
 
-    mostrarImagen(indiceActual);
+            const desc = document.createElement('div');
+            desc.id = 'galeria-descripcion';
+
+            carrusel.appendChild(btnPrev);
+            carrusel.appendChild(img);
+            carrusel.appendChild(btnNext);
+
+            root.appendChild(carrusel);
+            root.appendChild(desc);
+
+            function mostrarImagen(indice) {
+                img.src = imagenes[indice].url;
+                img.alt = imagenes[indice].descripcion || "Imagen galería";
+                desc.textContent = imagenes[indice].descripcion || "";
+            }
+
+            btnPrev.addEventListener('click', () => {
+                indiceActual = (indiceActual - 1 + imagenes.length) % imagenes.length;
+                mostrarImagen(indiceActual);
+            });
+
+            btnNext.addEventListener('click', () => {
+                indiceActual = (indiceActual + 1) % imagenes.length;
+                mostrarImagen(indiceActual);
+            });
+
+            mostrarImagen(indiceActual);
+        })
+        .catch(() => {
+            root.textContent = "No se pudo cargar la galería.";
+        });
 });

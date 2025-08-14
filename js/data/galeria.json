@@ -1,0 +1,16 @@
+{
+  "imagenes": [
+    {
+      "url": "assets/tiktok.png",
+      "descripcion": "Atardecer en la playa"
+    },
+    {
+      "url": "assets/youtube.jpg",
+      "descripcion": "Montañas nevadas"
+    },
+    {
+      "url": "assets/twitch.webp",
+      "descripcion": "Ciudad de noche"
+    }
+  ]
+}
