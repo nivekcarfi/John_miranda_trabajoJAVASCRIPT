@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const root = document.getElementById('galeria-root');
-    fetch("js/data/galeria.json")
+    fetch("../js/data/galeria.json")
         .then(response => response.json())
         .then(data => {
             const imagenes = data.imagenes;
@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             let indiceActual = 0;
-
-            // Crear estructura dinámica
             const carrusel = document.createElement('div');
             carrusel.className = 'carrusel';
 
