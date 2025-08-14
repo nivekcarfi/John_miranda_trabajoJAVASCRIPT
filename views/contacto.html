@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Contacto - JohnSite</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         #map { height: 400px; width: 100%; margin-bottom: 20px; }
@@ -16,7 +16,7 @@
         </div>
         <nav>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
+                <li><a href="/index.html">Inicio</a></li>
                 <li><a href="galeria.html">Galería</a></li>
                 <li><a href="presupuesto.html">Presupuesto</a></li>
                 <li><a href="contacto.html" class="active">Contacto</a></li>
@@ -78,9 +78,35 @@
         document.getElementById('ruta-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const direccion = document.getElementById('direccion').value;
-            if (!direccion) return;
 
-            // Geocodificar la dirección del cliente usando Nominatim
+            // Primero, intentar obtener la ubicación del usuario
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const clienteLatLng = [position.coords.latitude, position.coords.longitude];
+                        if (control) map.removeControl(control);
+                        control = L.Routing.control({
+                            waypoints: [
+                                L.latLng(clienteLatLng),
+                                L.latLng(empresaLatLng)
+                            ],
+                            routeWhileDragging: false,
+                            show: false
+                        }).addTo(map);
+                        document.getElementById('ruta-info').innerHTML = "Ruta calculada desde tu ubicación actual.";
+                    },
+                    function(error) {
+                        // Si el usuario no da permiso o hay error, usar la dirección manual
+                        buscarRutaPorDireccion(direccion);
+                    }
+                );
+            } else {
+                buscarRutaPorDireccion(direccion);
+            }
+        });
+
+        function buscarRutaPorDireccion(direccion) {
+            if (!direccion) return;
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`)
                 .then(response => response.json())
                 .then(data => {
@@ -95,7 +121,7 @@
                             routeWhileDragging: false,
                             show: false
                         }).addTo(map);
-                        document.getElementById('ruta-info').innerHTML = "Ruta calculada en el mapa.";
+                        document.getElementById('ruta-info').innerHTML = "Ruta calculada desde la dirección ingresada.";
                     } else {
                         document.getElementById('ruta-info').innerHTML = "Dirección no encontrada.";
                     }
@@ -103,7 +129,7 @@
                 .catch(() => {
                     document.getElementById('ruta-info').innerHTML = "Error al buscar la dirección.";
                 });
-        });
+        }
     </script>
 </body>
 </html>
